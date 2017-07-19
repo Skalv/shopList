@@ -3,14 +3,14 @@ var router = express.Router();
 
 var itemModel = require('../models/item');
 
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   itemModel.find({}, function(err, items) {
     if (err) res.send(err);
     res.json(items);
   })
 })
 
-router.get('/:id', function(req, res, next) {
+router.get('/:id', function(req, res) {
   var itemId = req.params.id;
   itemModel.findOne({"_id": itemId}, function(err, item) {
     if (err) res.send(err)
@@ -18,7 +18,7 @@ router.get('/:id', function(req, res, next) {
   })
 })
 
-router.post('/', function(req, res, next) {
+router.post('/', function(req, res) {
   
   var newItem = new itemModel({
     "title": req.body.title,
@@ -34,7 +34,7 @@ router.post('/', function(req, res, next) {
 
 })
 
-router.put('/:id', function(req, res, next) {
+router.put('/:id', function(req, res) {
 
   var itemId = req.params.id;
 
@@ -55,7 +55,7 @@ router.put('/:id', function(req, res, next) {
 
 })
 
-router.delete('/:id', function(req, res, next) {
+router.delete('/:id', function(req, res) {
   itemModel.deleteOne({ _id: req.params.id }, function(err, item){
     if (err) res.send(err)
     res.json(item)

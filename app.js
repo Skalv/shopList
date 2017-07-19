@@ -37,6 +37,9 @@ app.use('/users', users);
 var routeItems = require('./routes/items');
 app.use('/items', routeItems);
 
+var routeList = require('./routes/lists');
+app.use('/lists', routeList);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
