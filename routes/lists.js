@@ -36,7 +36,7 @@ router.put('/:id', function(req, res) {
     })
     .update({
       "title": req.body.title,
-      'items': req.body.items
+      "items": req.body.items
     })
     .exec(function(err, result) {
       if (err) res.send(err)
