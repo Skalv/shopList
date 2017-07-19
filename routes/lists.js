@@ -30,7 +30,7 @@ router.post('/', function(req, res) {
 })
 
 router.put('/:id', function(req, res) {
-  itemModel
+  List
     .where({
       _id: req.params.id
     })
