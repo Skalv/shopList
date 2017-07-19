@@ -2,15 +2,21 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var itemSchema = new Schema({
-  "title": String,
-  "categories": [{
-    "title": String
-  }],
+  "title": {type: String},
+  
   "author": {
-    "firstname": String,
-    "lastname": String
+    "firstname": {type: String},
+    "lastname": {type: String}
   },
-  "quantity": Number
+  "quantity": {type: Number}
 });
 
-module.exports = mongoose.model("Item", itemSchema);
+module.exports = {
+  "schema": itemSchema,
+  "model": mongoose.model('Item', itemSchema),
+  "registry": {
+    "urlTemplates": {
+      "self": "http://localhost:3000/api/items/{id}"
+    }
+  }
+}

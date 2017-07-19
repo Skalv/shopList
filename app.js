@@ -13,15 +13,8 @@ db.once('open', function() {
   console.log("DB connectée !")
 });
 
-
-var index = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+var API = require('json-api');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -31,21 +24,41 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/users', users);
+// On récup nos models
+var models = {
+  "Item": require("./models/item").model
+}
+// On récup les registres
+var registryTpl = {
+  "item": require("./models/item").registry
+}
 
-var routeItems = require('./routes/items');
-app.use('/items', routeItems);
+// Config du paquet JSON-API
+var adapter = new API.dbAdapters.Mongoose(models); 
+var registry = new API.ResourceTypeRegistry(registryTpl, {"dbAdapter": adapter});
+var docs = new API.controllers.Documentation(registry, {name: "Shop List API"});
+var controller = new API.controllers.API(registry);
+var front = new API.httpStrategies.Express(controller, docs);
 
-var routeList = require('./routes/lists');
-app.use('/lists', routeList);
+var apiReqHandler = front.apiRequest.bind(front);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
-});
+// Déclaration des routes
+app.options('/api/*', function(req, res) {
+  res.send(); // répond à toutes les requêtes OPTIONS
+})
+
+app.get('/api', front.docsRequest.bind(front)); // Renvois la doc de l'API.
+
+var opts = ['item'].join('|');
+// app.route('/api/:type(item|user|list)')`
+app.route(`/api/:type(${opts})`)
+  .get(apiReqHandler)
+  .post(apiReqHandler);
+
+app.route(`/api/:type(${opts})/:id`)
+  .get(apiReqHandler)
+  .put(apiReqHandler)
+  .delete(apiReqHandler);
 
 // error handler
 app.use(function(err, req, res, next) {
